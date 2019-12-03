@@ -11,6 +11,7 @@ const cacheSize = process.env.TILE_SET_CACHE || 128;
 const tileFolder = process.env.TILE_SET_PATH || __dirname;
 const maxPostSize = process.env.MAX_POST_SIZE || "1000kb";
 const maxParallelProcessing = 500;
+const allKeys = keys.get();
 
 // var rack = hat.rack();
 // var key = rack();
@@ -117,7 +118,6 @@ async function handler(req, res) {
 function verifyKey(key) {
   const shasum = crypto.createHash('sha256');
   shasum.update(key);
-  const allKeys = keys.get();
   const digest = shasum.digest('hex');
   return allKeys.indexOf(digest);
 }
