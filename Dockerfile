@@ -1,6 +1,7 @@
 FROM node:10
 
 COPY . /app
+COPY /etc/keys.js /app/keys.js
 WORKDIR /app
 RUN yarn install
 

@@ -13,6 +13,9 @@ Inspired by:
 
 ## API usage
 
+!!! This fork REQUIRE an api key for each request with a parameter ?key=APIKEYGOESHERE
+Rename existing keys_example.js file, place it in your /etc/keys.js and store properly hashed (sha256 hex format) keys inside the file !!!
+
 The service has a very simple API. Just post your latitude-longitude pairs as a JSON array to the service and receive an array of elevations as response. Maximum post payload is by default 700 KB (which fits roughly 10,000 points).
 
 ```bash

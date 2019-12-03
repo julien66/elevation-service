@@ -31,13 +31,13 @@ async function handlePOST(req, res) {
   
   if (!apiKey) {
     return send(res, 400, {
-      error: apiMessage('Missing'),
+      error: keys.message('Missing'),
     }); 
   }
   
   if (verifyKey(apiKey) < 0) {
     return send(res, 400, {
-      error: apiMessage('Invalid'),
+      error: keys.message('Invalid'),
     }); 
   }
   
@@ -65,13 +65,13 @@ async function handleGET(req, res) {
   const apiKey = reqQuery.key;
   if (!apiKey) {
     return send(res, 400, {
-      error: apiMessage('Missing'),
+      error: keys.message('Missing'),
     }); 
   }
 
   if (verifyKey(apiKey) < 0) {
     return send(res, 400, {
-      error: apiMessage('Invalid'),
+      error: keys.message('Invalid'),
     }); 
   }
 
@@ -115,16 +115,13 @@ async function handler(req, res) {
   }
 }
 
+// This function verify if the hash of the api key passed by the user
+// request matches a key stored inside keys.js file
 function verifyKey(key) {
   const shasum = crypto.createHash('sha256');
   shasum.update(key);
   const digest = shasum.digest('hex');
   return allKeys.indexOf(digest);
 }
-
-function apiMessage(wrong) {
-  return wrong + ' API key. Please email Téo or Julien at teobouvard@gmail.com or j.garcia@ffvl.fr.'
-}
-       
 
 module.exports = cors(handler);
