@@ -9,7 +9,7 @@ const keys = require('./keys.js');
 
 const cacheSize = process.env.TILE_SET_CACHE || 128;
 const tileFolder = process.env.TILE_SET_PATH || __dirname;
-const maxPostSize = process.env.MAX_POST_SIZE || "1000kb";
+const maxPostSize = process.env.MAX_POST_SIZE || "2000kb";
 const maxParallelProcessing = 500;
 const allKeys = keys.get();
 
