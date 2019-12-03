@@ -3,11 +3,21 @@ const limitedMap = require("limited-map");
 const query = require("micro-query");
 const cors = require("micro-cors")();
 const { FileTileSet, S3TileSet } = require("./tileset");
+//const hat = require('hat');
+const crypto = require('crypto');
+const keys = require('./keys.js');
 
 const cacheSize = process.env.TILE_SET_CACHE || 128;
 const tileFolder = process.env.TILE_SET_PATH || __dirname;
-const maxPostSize = process.env.MAX_POST_SIZE || "500kb";
+const maxPostSize = process.env.MAX_POST_SIZE || "1000kb";
 const maxParallelProcessing = 500;
+
+// var rack = hat.rack();
+// var key = rack();
+// var key = 'your-key-goes-here';
+// const shasum = crypto.createHash('sha256');
+// shasum.update(key);
+// console.log(shasum.digest('hex'));
 
 const tiles = tileFolder.startsWith("s3://")
   ? new S3TileSet({ cacheSize })
@@ -15,6 +25,21 @@ const tiles = tileFolder.startsWith("s3://")
 
 async function handlePOST(req, res) {
   const payload = await json(req, { limit: maxPostSize });
+  const reqQuery = query(req);
+  const apiKey = reqQuery.key;
+  
+  if (!apiKey) {
+    return send(res, 400, {
+      error: apiMessage('Missing'),
+    }); 
+  }
+  
+  if (verifyKey(apiKey) < 0) {
+    return send(res, 400, {
+      error: apiMessage('Invalid'),
+    }); 
+  }
+  
   if (
     !payload ||
     !Array.isArray(payload) ||
@@ -36,6 +61,19 @@ async function handlePOST(req, res) {
 
 async function handleGET(req, res) {
   const reqQuery = query(req);
+  const apiKey = reqQuery.key;
+  if (!apiKey) {
+    return send(res, 400, {
+      error: apiMessage('Missing'),
+    }); 
+  }
+
+  if (verifyKey(apiKey) < 0) {
+    return send(res, 400, {
+      error: apiMessage('Invalid'),
+    }); 
+  }
+
   const lat = parseFloat(reqQuery.lat);
   const lng = parseFloat(reqQuery.lng);
   if (lat == null || !Number.isFinite(lat)) {
@@ -75,5 +113,18 @@ async function handler(req, res) {
       return send(res, 405, { error: "Only GET or POST allowed" });
   }
 }
+
+function verifyKey(key) {
+  const shasum = crypto.createHash('sha256');
+  shasum.update(key);
+  const allKeys = keys.get();
+  const digest = shasum.digest('hex');
+  return allKeys.indexOf(digest);
+}
+
+function apiMessage(wrong) {
+  return wrong + ' API key. Please email Téo or Julien at teobouvard@gmail.com or j.garcia@ffvl.fr.'
+}
+       
 
 module.exports = cors(handler);

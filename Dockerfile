@@ -6,10 +6,10 @@ RUN yarn install
 
 ENV TILE_SET_CACHE 128
 ENV TILE_SET_PATH /app/data
-ENV MAX_POST_SIZE 700kb
+ENV MAX_POST_SIZE 1000kb
 
-EXPOSE 3000
+EXPOSE 4000
 
-HEALTHCHECK CMD curl --fail http://localhost:3000/status || exit 1
+HEALTHCHECK CMD curl --fail http://localhost:4000/status || exit 1
 
 CMD ["yarn", "run", "start"]
